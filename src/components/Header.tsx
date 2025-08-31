@@ -63,7 +63,7 @@ const Header = () => {
             </Button>
 
             {/* React Router Link for booking complaint */}
-            <Link to="/book-complaint">
+            <Link to="/track-complaint">
               <Button className="btn-hero text-sm px-6 py-2">
                 Track Complaint
               </Button>

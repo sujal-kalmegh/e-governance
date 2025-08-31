@@ -68,17 +68,17 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-background/60" />
-                <span className="text-background/80">1-800-CITIZEN</span>
+                <span className="text-background/80">+918329413013</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-background/60" />
-                <span className="text-background/80">help@citizenvoice.gov</span>
+                <span className="text-background/80">citizenwellfare@gov.in</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-background/60 mt-0.5" />
                 <span className="text-background/80">
                   123 Government Plaza<br />
-                  City Hall, State 12345
+                  Digori, Nagpur - 440024
                 </span>
               </div>
             </div>
@@ -100,7 +100,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
               <p className="text-background/80 text-sm">
-                © 2024 CitizenVoice. All rights reserved.
+                © 2025 CitizenVoice. All rights reserved.
               </p>
               <div className="flex space-x-6 text-sm">
                 <a href="#" className="text-background/80 hover:text-background transition-colors">Privacy Policy</a>

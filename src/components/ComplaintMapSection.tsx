@@ -1,33 +1,89 @@
-import React from 'react';
-import { MapPin, Clock, CheckCircle, AlertCircle, Users } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { GoogleMap, MarkerF, useJsApiLoader, InfoWindowF } from "@react-google-maps/api";
+import { supabase } from "../pages/supabaseClient";
 
-const complaints = [
-  { id: 1, type: "Road Repair", status: "resolved", location: "Downtown", time: "2 days ago" },
-  { id: 2, type: "Street Light", status: "in-progress", location: "Park Ave", time: "1 week ago" },
-  { id: 3, type: "Noise Issue", status: "new", location: "Residential", time: "3 hours ago" },
-  { id: 4, type: "Water Leak", status: "in-progress", location: "Main St", time: "5 days ago" },
-  { id: 5, type: "Waste Collection", status: "resolved", location: "Oak District", time: "1 week ago" }
-];
+interface Complaint {
+  id: number;
+  type: string;
+  status: "resolved" | "in-progress" | "new";
+  location: string;
+  time: string;
+  lat: number;
+  lng: number;
+}
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'resolved': return 'text-success bg-success/10';
-    case 'in-progress': return 'text-warning bg-warning/10';
-    case 'new': return 'text-primary bg-primary/10';
-    default: return 'text-muted-foreground bg-muted';
+    case "resolved":
+      return "text-success bg-success/10";
+    case "in-progress":
+      return "text-warning bg-warning/10";
+    case "new":
+      return "text-primary bg-primary/10";
+    default:
+      return "text-muted-foreground bg-muted";
   }
 };
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case 'resolved': return CheckCircle;
-    case 'in-progress': return Clock;
-    case 'new': return AlertCircle;
-    default: return Clock;
+    case "resolved":
+      return CheckCircle;
+    case "in-progress":
+      return Clock;
+    case "new":
+      return AlertCircle;
+    default:
+      return Clock;
   }
 };
 
+const containerStyle: React.CSSProperties = {
+  width: "100%",
+  height: "320px",
+  borderRadius: "1rem",
+};
+
+const center = {
+  lat: 21.1466, // Nagpur center
+  lng: 79.0888,
+};
+
 const ComplaintMapSection = () => {
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [selectedComplaint, setSelectedComplaint] = useState<number | null>(null);
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
+  });
+
+  // Fetch complaints from Supabase
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      const { data, error } = await supabase.from("complaints").select("*");
+      if (error) {
+        console.error("Error fetching complaints:", error.message);
+        return;
+      }
+
+      // Map the data to include lat/lng numbers if they are stored as text
+      const mapped = data.map((c: any) => ({
+        id: c.id,
+        type: c.category,
+        status: c.status || "new",
+        location: c.ward,
+        time: c.created_at ? new Date(c.created_at).toLocaleString() : "Unknown",
+        lat: Number(c.lat) || 21.1466, // fallback to center
+        lng: Number(c.lng) || 79.0888,
+      }));
+      setComplaints(mapped);
+    };
+
+    fetchComplaints();
+  }, []);
+
+  if (loadError) return <div>Error loading Google Maps</div>;
+
   return (
     <section id="complaints" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -62,32 +118,63 @@ const ComplaintMapSection = () => {
                 </div>
               </div>
 
-              {/* Mock Map */}
-              <div className="relative bg-gradient-to-br from-muted/50 to-background rounded-2xl h-80 overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--success))_0%,transparent_50%),radial-gradient(circle_at_80%_80%,hsl(var(--primary))_0%,transparent_50%),radial-gradient(circle_at_40%_40%,hsl(var(--warning))_0%,transparent_50%)] opacity-20"></div>
-                
-                {/* Map pins */}
-                <div className="absolute top-16 left-20 animate-bounce">
-                  <div className="w-4 h-4 bg-success rounded-full border-2 border-background shadow-medium"></div>
-                </div>
-                <div className="absolute top-32 right-24 animate-bounce" style={{ animationDelay: '0.5s' }}>
-                  <div className="w-4 h-4 bg-warning rounded-full border-2 border-background shadow-medium"></div>
-                </div>
-                <div className="absolute bottom-20 left-32 animate-bounce" style={{ animationDelay: '1s' }}>
-                  <div className="w-4 h-4 bg-primary rounded-full border-2 border-background shadow-medium"></div>
-                </div>
-                <div className="absolute bottom-24 right-20 animate-bounce" style={{ animationDelay: '1.5s' }}>
-                  <div className="w-4 h-4 bg-warning rounded-full border-2 border-background shadow-medium"></div>
-                </div>
+              <div className="rounded-2xl overflow-hidden">
+                {isLoaded ? (
+                  <GoogleMap
+                    mapContainerStyle={containerStyle}
+                    center={center}
+                    zoom={13}
+                    options={{
+                      streetViewControl: false,
+                      mapTypeControl: false,
+                      fullscreenControl: false,
+                    }}
+                  >
+                    {complaints.map((complaint) => (
+                      <MarkerF
+                        key={complaint.id}
+                        position={{ lat: complaint.lat, lng: complaint.lng }}
+                        icon={{
+                          path: "M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7z",
+                          fillColor:
+                            complaint.status === "resolved"
+                              ? "#16a34a"
+                              : complaint.status === "in-progress"
+                              ? "#ea580c"
+                              : "#2563eb",
+                          fillOpacity: 1,
+                          strokeWeight: 0,
+                          scale: 2,
+                          anchor: new google.maps.Point(12, 24),
+                        }}
+                        onClick={() => setSelectedComplaint(complaint.id)}
+                      />
+                    ))}
 
-                {/* Map overlay text */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center bg-background/90 backdrop-blur-sm rounded-xl p-6 border border-border/50">
-                    <MapPin className="w-8 h-8 mx-auto mb-2 text-primary" />
-                    <p className="text-sm text-muted-foreground">Interactive map coming soon</p>
-                    <p className="text-xs text-muted-foreground mt-1">See real complaints in your area</p>
+                    {selectedComplaint && (
+                      <InfoWindowF
+                        position={{
+                          lat: complaints.find(c => c.id === selectedComplaint)!.lat,
+                          lng: complaints.find(c => c.id === selectedComplaint)!.lng,
+                        }}
+                        onCloseClick={() => setSelectedComplaint(null)}
+                      >
+                        <div className="p-2">
+                          <h4 className="font-semibold text-sm">
+                            {complaints.find(c => c.id === selectedComplaint)!.type}
+                          </h4>
+                          <p className="text-xs">{complaints.find(c => c.id === selectedComplaint)!.location}</p>
+                          <p className="text-xs opacity-70">Status: {complaints.find(c => c.id === selectedComplaint)!.status}</p>
+                          <p className="text-xs opacity-70">{complaints.find(c => c.id === selectedComplaint)!.time}</p>
+                        </div>
+                      </InfoWindowF>
+                    )}
+                  </GoogleMap>
+                ) : (
+                  <div className="h-80 w-full animate-pulse bg-muted/40 flex justify-center items-center">
+                    Loading map...
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -96,7 +183,7 @@ const ComplaintMapSection = () => {
           <div className="space-y-6">
             <div className="bg-gradient-card border border-border/50 rounded-3xl p-6 shadow-medium">
               <h3 className="text-xl font-semibold text-foreground mb-6">Recent Activity</h3>
-              
+
               <div className="space-y-4">
                 {complaints.map((complaint) => {
                   const StatusIcon = getStatusIcon(complaint.status);
@@ -113,31 +200,6 @@ const ComplaintMapSection = () => {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="bg-gradient-card border border-border/50 rounded-3xl p-6 shadow-medium">
-              <h3 className="text-lg font-semibold text-foreground mb-4">This Week</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">New Complaints</span>
-                  <span className="font-semibold text-primary">23</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Resolved</span>
-                  <span className="font-semibold text-success">18</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">In Progress</span>
-                  <span className="font-semibold text-warning">12</span>
-                </div>
-                <div className="pt-2 border-t border-border/50">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Avg. Response</span>
-                    <span className="font-semibold text-foreground">18 hrs</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

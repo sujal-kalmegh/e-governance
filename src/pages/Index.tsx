@@ -36,20 +36,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="p-6 flex justify-center space-x-4">
-        <Link to="/book-complaint">
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-            Book Complaint
-          </button>
-        </Link>
-        <Link to="/track-complaint">
-          <button className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700">
-            Track Complaint
-          </button>
-        </Link>
-      </div>
-      {/* Top Book Complaint Button */}
       
+      {/* Top Book Complaint Button */}
 
       <main>
         <HeroSection />
@@ -60,7 +48,7 @@ const Index = () => {
 
         {/* Grievance Form */}
         <section className="p-6 max-w-xl mx-auto">
-          <h1 className="text-2xl font-bold mb-4">Submit Grievance</h1>
+          <h1 className="text-2xl font-bold mb-4">Submit Feedback</h1>
           <form onSubmit={handleSubmit} className="space-y-3">
             <input
               type="text"
@@ -72,7 +60,7 @@ const Index = () => {
             />
             <input
               type="text"
-              placeholder="Your Issue"
+              placeholder="Your Feedback"
               value={issue}
               onChange={(e) => setIssue(e.target.value)}
               className="border p-2 rounded w-full"

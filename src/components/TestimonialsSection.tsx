@@ -1,133 +1,145 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Star, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    name: "Sarah Chen",
-    role: "Local Resident",
-    image: "SC",
-    content: "I reported a broken streetlight and it was fixed within 3 days! The real-time updates made all the difference. Finally, a government service that works.",
+    name: "रीना शर्मा",
+    nameEn: "Reena Sharma",
+    role: "स्थानीय निवासी",
+    roleEn: "Local Resident",
+    image: "RS",
+    content: "मैंने टूटी हुई स्ट्रीट लाइट की शिकायत की थी और यह 3 दिनों में ठीक हो गई! रियल-टाइम अपडेट्स ने बहुत मदद की। पहली बार लगा कि सरकारी सेवा वास्तव में काम कर रही है।",
+    contentEn: "I reported a broken street light and it was fixed within 3 days! Real-time updates really helped. For the first time, it felt like government service truly works.",
     rating: 5,
-    issue: "Street Light Repair"
+    issue: "स्ट्रीट लाइट रिपेयर",
+    issueEn: "Street Light Repair"
   },
   {
-    name: "Marcus Johnson",
-    role: "Business Owner",
-    image: "MJ",
-    content: "The AI helped me write a clear complaint about noise issues. The resolution was fair and quick. This platform actually listens to citizens.",
+    name: "अजय वर्मा",
+    nameEn: "Ajay Verma",
+    role: "व्यवसायी",
+    roleEn: "Business Owner",
+    image: "AV",
+    content: "एआई ने मुझे शोर की समस्या पर स्पष्ट शिकायत लिखने में मदद की। समाधान तेज और निष्पक्ष था। यह प्लेटफ़ॉर्म सच में नागरिकों की बात सुनता है।",
+    contentEn: "AI helped me write a clear complaint about the noise issue. The resolution was quick and fair. This platform truly listens to citizens.",
     rating: 5,
-    issue: "Noise Complaint"
+    issue: "शोर शिकायत",
+    issueEn: "Noise Complaint"
   },
   {
-    name: "Elena Rodriguez",
-    role: "Community Advocate",
-    image: "ER",
-    content: "Love the transparency! I can see exactly what's happening in my neighborhood and track progress on multiple issues. This is how government should work.",
+    name: "प्रिया नायर",
+    nameEn: "Priya Nair",
+    role: "सामुदायिक कार्यकर्ता",
+    roleEn: "Community Activist",
+    image: "PN",
+    content: "पारदर्शिता अद्भुत है! मैं अपने इलाके में क्या हो रहा है, यह देख सकती हूं और कई मुद्दों की प्रगति ट्रैक कर सकती हूं। यही सही शासन है।",
+    contentEn: "The transparency is amazing! I can see what’s happening in my area and track the progress of multiple issues. This is real governance.",
     rating: 5,
-    issue: "Multiple Issues"
+    issue: "कई मुद्दे",
+    issueEn: "Multiple Issues"
   },
   {
-    name: "David Park",
-    role: "Senior Citizen",
-    image: "DP",
-    content: "The voice input feature was perfect for me. I just spoke my concern and everything was handled professionally. Amazing service!",
+    name: "संजय गुप्ता",
+    nameEn: "Sanjay Gupta",
+    role: "आईटी प्रोफेशनल",
+    roleEn: "IT Professional",
+    image: "SG",
+    content: "मेरी पानी की समस्या का समाधान 48 घंटे के भीतर हुआ। मुझे हर स्टेप पर नोटिफिकेशन मिला। शानदार अनुभव!",
+    contentEn: "My water issue was resolved within 48 hours. I got notifications at every step. Great experience!",
     rating: 5,
-    issue: "Accessibility Request"
+    issue: "पानी की आपूर्ति",
+    issueEn: "Water Supply"
   },
   {
-    name: "Amy Foster",
-    role: "Young Professional",
-    image: "AF",
-    content: "Got SMS updates throughout the process. My pothole complaint was resolved in record time. This is the future of citizen services.",
+    name: "नेहा सिंह",
+    nameEn: "Neha Singh",
+    role: "शिक्षिका",
+    roleEn: "Teacher",
+    image: "NS",
+    content: "गड्ढों की शिकायत करना बहुत आसान था। अब सड़क साफ और सुरक्षित है। यह प्लेटफ़ॉर्म बहुत उपयोगी है।",
+    contentEn: "Reporting potholes was very easy. Now the road is clean and safe. This platform is very useful.",
     rating: 5,
-    issue: "Road Repair"
+    issue: "सड़क की मरम्मत",
+    issueEn: "Road Repair"
   },
   {
-    name: "Robert Kim",
-    role: "Parent",
-    image: "RK",
-    content: "Reported unsafe playground equipment and got immediate response. The safety of our children was taken seriously. Highly recommend!",
+    name: "विक्रम देशमुख",
+    nameEn: "Vikram Deshmukh",
+    role: "उद्यमी",
+    roleEn: "Entrepreneur",
+    image: "VD",
+    content: "सरकारी सेवाओं पर भरोसा बढ़ गया है। यह सिस्टम पारदर्शिता और त्वरित समाधान दोनों देता है।",
+    contentEn: "Trust in government services has increased. This system provides both transparency and quick resolution.",
     rating: 5,
-    issue: "Safety Concern"
+    issue: "शिकायत समाधान",
+    issueEn: "Complaint Resolution"
   }
 ];
 
-const TestimonialsSection = () => {
+export default function TestimonialsSection() {
+  const [language, setLanguage] = useState<'hi' | 'en'>('hi');
+
   return (
-    <section id="testimonials" className="py-20">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-4">
-            Real Stories from Real Citizens
+    <section className="bg-white py-16">
+      <div className="container mx-auto px-6">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 flex justify-center items-center gap-3">
+            <Quote className="w-8 h-8 text-blue-600" />
+            {language === 'hi' ? 'उपयोगकर्ता समीक्षाएँ' : 'User Testimonials'}
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Hear how CitizenVoice has helped community members get their voices heard and problems solved.
+          <p className="text-gray-600 mt-4">
+            {language === 'hi'
+              ? 'देखें लोग हमारे बारे में क्या कह रहे हैं'
+              : 'See what people are saying about us'}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Language Toggle */}
+        <div className="text-center mb-8">
+          <button
+            onClick={() => setLanguage(language === 'hi' ? 'en' : 'hi')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            {language === 'hi' ? 'Switch to English' : 'हिंदी में देखें'}
+          </button>
+        </div>
+
+        {/* Testimonials Grid */}
+        <div className="grid md:grid-cols-3 gap-8">
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="card-testimonial group hover-lift"
+              className="bg-gray-50 p-6 rounded-2xl shadow hover:shadow-lg transition-shadow duration-300"
             >
-              {/* Quote Icon */}
-              <div className="flex justify-between items-start mb-4">
-                <Quote className="w-6 h-6 text-primary/60" />
-                <div className="flex items-center space-x-1">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-warning text-warning" />
-                  ))}
-                </div>
-              </div>
-
-              {/* Content */}
-              <blockquote className="text-muted-foreground mb-6 leading-relaxed">
-                "{testimonial.content}"
-              </blockquote>
-
-              {/* Author */}
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-r from-primary to-primary-hover rounded-xl flex items-center justify-center text-primary-foreground font-semibold">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold text-lg">
                   {testimonial.image}
                 </div>
-                <div>
-                  <p className="font-semibold text-foreground">{testimonial.name}</p>
-                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  <div className="inline-flex items-center mt-1 px-2 py-1 bg-accent/50 rounded-md text-xs text-accent-foreground">
-                    {testimonial.issue}
-                  </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {language === 'hi' ? testimonial.name : testimonial.nameEn}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {language === 'hi' ? testimonial.role : testimonial.roleEn}
+                  </p>
                 </div>
               </div>
-
-              {/* Hover Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+              <p className="text-gray-700 mb-4">
+                {language === 'hi' ? testimonial.content : testimonial.contentEn}
+              </p>
+              <div className="flex items-center mb-2">
+                {[...Array(testimonial.rating)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                ))}
+              </div>
+              <p className="text-sm text-gray-500">
+                {language === 'hi' ? testimonial.issue : testimonial.issueEn}
+              </p>
             </div>
           ))}
-        </div>
-
-        {/* Bottom Stats */}
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-center space-x-8 bg-gradient-card border border-border/50 rounded-2xl px-8 py-6 shadow-soft">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-foreground">4.8/5</div>
-              <div className="text-sm text-muted-foreground">Average Rating</div>
-            </div>
-            <div className="w-px h-8 bg-border"></div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-foreground">12,000+</div>
-              <div className="text-sm text-muted-foreground">Happy Citizens</div>
-            </div>
-            <div className="w-px h-8 bg-border"></div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-foreground">89%</div>
-              <div className="text-sm text-muted-foreground">Issues Resolved</div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
   );
-};
-
-export default TestimonialsSection;
+}
